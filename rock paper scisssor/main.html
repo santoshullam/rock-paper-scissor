@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Rock Paper Scissors Game</title>
+  <style>
+    body {
+      background: linear-gradient(to right, #1e3c72, #2a5298);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      color: #fff;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      font-size: 2.5rem;
+      text-shadow: 2px 2px 5px #000;
+    }
+
+    .choices {
+      display: flex;
+      gap: 20px;
+    }
+
+    .choice {
+      background: #ffffff10;
+      padding: 20px;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: transform 0.3s ease, background 0.3s;
+      border: 2px solid white;
+      font-size: 2rem;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+
+    .choice:hover {
+      background: #ffffff30;
+      transform: scale(1.1);
+    }
+
+    .result {
+      margin-top: 25px;
+      font-size: 1.5rem;
+      text-align: center;
+    }
+
+    .scoreboard {
+      margin-top: 10px;
+      font-size: 1.2rem;
+    }
+
+    .restart {
+      margin-top: 20px;
+      padding: 10px 25px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      background: #fff;
+      color: #2a5298;
+      font-weight: bold;
+    }
+
+    .restart:hover {
+      background: #ddd;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Rock 🪨 Paper 📄 Scissors ✂️</h1>
+
+  <div class="choices">
+    <div class="choice" data-choice="rock">🪨</div>
+    <div class="choice" data-choice="paper">📄</div>
+    <div class="choice" data-choice="scissors">✂️</div>
+  </div>
+
+  <div class="result" id="resultText">
+    Choose Rock, Paper or Scissors
+  </div>
+
+  <div class="scoreboard" id="scoreboard">
+    You: 0 | Computer: 0
+  </div>
+
+  <button class="restart" onclick="restartGame()">Restart Game 🔁</button>
+
+  <!-- Sounds -->
+  <audio id="clickSound" src="https://www.soundjay.com/buttons/sounds/button-16.mp3"></audio>
+  <audio id="winSound" src="https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3"></audio>
+  <audio id="loseSound" src="https://www.soundjay.com/misc/sounds/fail-buzzer-01.mp3"></audio>
+  <audio id="drawSound" src="https://www.soundjay.com/buttons/sounds/button-10.mp3"></audio>
+
+  <script>
+    const choices = document.querySelectorAll('.choice');
+    const resultText = document.getElementById('resultText');
+    const scoreboard = document.getElementById('scoreboard');
+
+    const clickSound = document.getElementById('clickSound');
+    const winSound = document.getElementById('winSound');
+    const loseSound = document.getElementById('loseSound');
+    const drawSound = document.getElementById('drawSound');
+
+    let userScore = 0;
+    let computerScore = 0;
+
+    const getComputerChoice = () => {
+      const options = ['rock', 'paper', 'scissors'];
+      return options[Math.floor(Math.random() * 3)];
+    };
+
+    const getEmoji = (choice) => {
+      if (choice === 'rock') return '🪨';
+      if (choice === 'paper') return '📄';
+      return '✂️';
+    };
+
+    choices.forEach(choice => {
+      choice.addEventListener('click', () => {
+        clickSound.play();
+
+        const userChoice = choice.dataset.choice;
+
+        resultText.innerHTML = `
+          You selected ${getEmoji(userChoice)} <br>
+          Computer is choosing... 🤖
+        `;
+
+        setTimeout(() => {
+          const computerChoice = getComputerChoice();
+
+          if (userChoice === computerChoice) {
+            drawSound.play();
+            resultText.innerHTML = `
+              You: ${getEmoji(userChoice)} <br>
+              Computer: ${getEmoji(computerChoice)} <br><br>
+              It's a Draw 🤝
+            `;
+          }
+          else if (
+            (userChoice === 'rock' && computerChoice === 'scissors') ||
+            (userChoice === 'paper' && computerChoice === 'rock') ||
+            (userChoice === 'scissors' && computerChoice === 'paper')
+          ) {
+            winSound.play();
+            userScore++;
+            resultText.innerHTML = `
+              You: ${getEmoji(userChoice)} <br>
+              Computer: ${getEmoji(computerChoice)} <br><br>
+              You Win 🎉
+            `;
+          }
+          else {
+            loseSound.play();
+            computerScore++;
+            resultText.innerHTML = `
+              You: ${getEmoji(userChoice)} <br>
+              Computer: ${getEmoji(computerChoice)} <br><br>
+              You Lose 😢
+            `;
+          }
+
+          scoreboard.innerHTML = `You: ${userScore} | Computer: ${computerScore}`;
+
+        }, 800); // delay to hide computer choice
+      });
+    });
+
+    function restartGame() {
+      userScore = 0;
+      computerScore = 0;
+      scoreboard.innerHTML = `You: 0 | Computer: 0`;
+      resultText.innerHTML = "Game restarted! Choose again 🎮";
+    }
+  </script>
+
+</body>
+</html>
+
